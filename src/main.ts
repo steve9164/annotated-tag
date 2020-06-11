@@ -25,10 +25,10 @@ async function run(): Promise<void> {
         message: tagMessage,
         object: github.context.sha,
         type: "commit",
-        tagger: {
-          name: taggerName,
-          email: taggerEmail,
-        },
+        // tagger: {
+        //   name: taggerName,
+        //   email: taggerEmail,
+        // },
       });
       await octokit.git.createRef({
         ...github.context.repo,

@@ -2441,10 +2441,7 @@ function run() {
                 if (taggerName || taggerEmail) {
                     core.info(`Using tag author: ${taggerName || ""}${taggerEmail ? ` <${taggerEmail}>` : ""}`);
                 }
-                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit", tagger: {
-                        name: taggerName,
-                        email: taggerEmail,
-                    } }));
+                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit" }));
                 yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: tagRequest.data.sha }));
             }
             else {
