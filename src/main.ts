@@ -8,8 +8,8 @@ async function run(): Promise<void> {
     const token = core.getInput("github-token", { required: true });
     const octokit = github.getOctokit(token);
     if (tagMessage) {
-      core.debug("Creating an annotated git tag equivalent to:");
-      core.debug(`  git tag -a ${tagName} -m "${tagMessage}"`);
+      core.info("Creating an annotated git tag equivalent to:");
+      core.info(`  git tag -a ${tagName} -m "${tagMessage}"`);
       const tagRequest = await octokit.git.createTag({
         ...github.context.repo,
         tag: tagName,
@@ -23,8 +23,8 @@ async function run(): Promise<void> {
         sha: tagRequest.data.sha,
       });
     } else {
-      core.debug("Creating a lightweight git tag equivalent to:");
-      core.debug(`  git tag ${tagName}`);
+      core.info("Creating a lightweight git tag equivalent to:");
+      core.info(`  git tag ${tagName}`);
       await octokit.git.createRef({
         ...github.context.repo,
         ref: `refs/tags/${tagName}`,
