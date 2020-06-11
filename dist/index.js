@@ -2454,6 +2454,7 @@ function run() {
             }
         }
         catch (error) {
+            core.error(`Caught error: ${JSON.stringify(error)}`);
             core.setFailed(error.mesage);
         }
     });
