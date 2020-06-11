@@ -2,8 +2,12 @@ name: 'Your name here'
 description: 'Provide a description here'
 author: 'Your name or organization here'
 inputs:
-  github_token:              # change this
-    description: 'Github token'
+  github-token:
+    description: 'GitHub token'
+  tag-name:
+    description: 'Git tag name'
+  tag-message:
+    description: 'Git tag message. Set this to get an annotated git tag'
 runs:
   using: 'node12'
   main: 'dist/index.js'
