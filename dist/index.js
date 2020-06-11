@@ -2428,18 +2428,23 @@ const core = __importStar(__webpack_require__(470));
 const github = __importStar(__webpack_require__(469));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
-        const tagName = core.getInput("tag-name", { required: true });
-        const tagMessage = core.getInput("tag-mesage");
-        const token = core.getInput("github-token", { required: true });
-        const octokit = github.getOctokit(token);
-        if (tagMessage) {
-            // Create an annotated tag
-            const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit" }));
-            yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: tagRequest.data.sha }));
+        try {
+            const tagName = core.getInput("tag-name", { required: true });
+            const tagMessage = core.getInput("tag-mesage");
+            const token = core.getInput("github-token", { required: true });
+            const octokit = github.getOctokit(token);
+            if (tagMessage) {
+                // Create an annotated tag
+                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit" }));
+                yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: tagRequest.data.sha }));
+            }
+            else {
+                // Create light-weight tag
+                yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: github.context.sha }));
+            }
         }
-        else {
-            // Create light-weight tag
-            yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: github.context.sha }));
+        catch (error) {
+            core.setFailed(error.mesage);
         }
     });
 }
