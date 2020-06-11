@@ -1,19 +1,33 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import * as core from "@actions/core";
+import * as github from "@actions/github";
 
 async function run(): Promise<void> {
-  try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
-
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    core.setFailed(error.message)
+  const tagName = core.getInput("tag-name", { required: true });
+  const tagMessage = core.getInput("tag-mesage");
+  const token = core.getInput("github-token", { required: true });
+  const octokit = github.getOctokit(token);
+  if (tagMessage) {
+    // Create an annotated tag
+    const tagRequest = await octokit.git.createTag({
+      ...github.context.repo,
+      tag: tagName,
+      message: tagMessage,
+      object: github.context.sha,
+      type: "commit",
+    });
+    await octokit.git.createRef({
+      ...github.context.repo,
+      ref: `refs/tags/${tagName}`,
+      sha: tagRequest.data.sha,
+    });
+  } else {
+    // Create light-weight tag
+    await octokit.git.createRef({
+      ...github.context.repo,
+      ref: `refs/tags/${tagName}`,
+      sha: github.context.sha,
+    });
   }
 }
 
-run()
+run();
