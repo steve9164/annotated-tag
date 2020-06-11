@@ -2438,10 +2438,21 @@ function run() {
             if (tagMessage) {
                 core.info("Creating an annotated git tag equivalent to:");
                 core.info(`  git tag -a ${tagName} -m "${tagMessage}"`);
+                // Build tagger object because createTag doesn't like undefined parameters
+                const tagger = {};
                 if (taggerName || taggerEmail) {
-                    core.info(`Using tag author: ${taggerName || ""}${taggerEmail ? ` <${taggerEmail}>` : ""}`);
+                    let message = "Using tag author:";
+                    if (taggerName) {
+                        tagger.name = taggerName;
+                        message += ` ${taggerName}`;
+                    }
+                    if (taggerEmail) {
+                        tagger.email = taggerEmail;
+                        message += ` <${taggerEmail}>`;
+                    }
+                    core.info(message);
                 }
-                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit" }));
+                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit", tagger }));
                 yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: tagRequest.data.sha }));
             }
             else {
@@ -2451,8 +2462,15 @@ function run() {
             }
         }
         catch (error) {
-            core.error(`Caught error: ${JSON.stringify(error)}`);
-            core.setFailed(error.mesage);
+            if (error.message) {
+                core.setFailed(error.mesage);
+            }
+            else if (error.request) {
+                core.setFailed(`Request to ${error.request.url} failed with status code ${error.status}`);
+                core.error(`Returned data: ${typeof error.request.data === "object"
+                    ? JSON.stringify(error.request.data)
+                    : error.request.data}`);
+            }
         }
     });
 }
