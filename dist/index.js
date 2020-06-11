@@ -2452,7 +2452,7 @@ function run() {
                     }
                     core.info(message);
                 }
-                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit", tagger }));
+                const tagRequest = yield octokit.git.createTag(Object.assign(Object.assign(Object.assign({}, github.context.repo), { tag: tagName, message: tagMessage, object: github.context.sha, type: "commit" }), (taggerName || taggerEmail ? { tagger } : {})));
                 yield octokit.git.createRef(Object.assign(Object.assign({}, github.context.repo), { ref: `refs/tags/${tagName}`, sha: tagRequest.data.sha }));
             }
             else {
@@ -2470,6 +2470,9 @@ function run() {
                 core.error(`Returned data: ${typeof error.request.data === "object"
                     ? JSON.stringify(error.request.data)
                     : error.request.data}`);
+            }
+            else {
+                core.setFailed(error);
             }
         }
     });

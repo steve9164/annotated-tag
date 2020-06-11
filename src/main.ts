@@ -32,7 +32,7 @@ async function run(): Promise<void> {
         message: tagMessage,
         object: github.context.sha,
         type: "commit",
-        tagger,
+        ...(taggerName || taggerEmail ? { tagger } : {}),
       });
       await octokit.git.createRef({
         ...github.context.repo,
@@ -62,6 +62,8 @@ async function run(): Promise<void> {
             : error.request.data
         }`
       );
+    } else {
+      core.setFailed(error);
     }
   }
 }
