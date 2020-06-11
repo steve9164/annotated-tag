@@ -1,0 +1,29 @@
+name: "auto-tag"
+on: # tag releases
+  push:
+    branches:
+      - 'releases/*'
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check version changes
+        uses: EndBug/version-check@v1
+        id: check
+        with:
+          diff-search: true
+
+      - name: Version update detected
+        if: steps.check.outputs.changed == 'true'
+        run: 'echo "Version change found! New version: ${{ steps.check.outputs.version }} (${{ steps.check.outputs.type }})"'
+
+      - name: Tag new version
+        if: steps.check.outputs.changed == 'true'
+        uses: ./
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          tag-name: 'v${{ steps.check.outputs.version }}'
+          tag-message: 'v${{ steps.check.outputs.version }}'

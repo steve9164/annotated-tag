@@ -8,6 +8,10 @@ inputs:
     description: 'Git tag name'
   tag-message:
     description: 'Git tag message. Set this to get an annotated git tag'
+  tagger-name:
+    description: 'Git tag author. Only used for annotated git tags'
+  tagger-email:
+    description: 'Git tag author email. Only used for annotated git tags'
 runs:
   using: 'node12'
   main: 'dist/index.js'
