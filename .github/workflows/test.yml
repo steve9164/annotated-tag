@@ -32,7 +32,7 @@ jobs:
       - name: Tag new version
         if: steps.check.outputs.changed == 'true'
         uses: ./
-        with: 
+        with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: ${{ steps.check.outputs.version }}
           tag-message: ${{ steps.check.outputs.version }}
