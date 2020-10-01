@@ -25,7 +25,7 @@
   "author": "Stephen Davies <steve9164@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0",
+    "@actions/core": "^1.2.6",
     "@actions/github": "^3.0.0"
   },
   "devDependencies": {
